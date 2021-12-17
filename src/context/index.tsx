@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useContext } from "react";
+import React, { createContext, useReducer, useContext, useState } from "react";
 import { Action, ITodo, ITodosState } from "../types";
 
 const TodosStateContext = createContext<ITodosState>({} as ITodosState);
@@ -61,10 +61,11 @@ export function TodosContextProvider({
   children: React.ReactNode;
 }) {
   const [todos, dispatch] = useReducer(todosReducer, []);
+  const [selectedTodo, setSelectedTodo] = useState<ITodo | null>(null);
 
   return (
     <TodosStateContext.Provider
-      value={{ todos, dispatch}}
+      value={{ todos, dispatch, selectedTodo, setSelectedTodo }}
     >
       {children}
     </TodosStateContext.Provider>
@@ -81,4 +82,16 @@ export function useTodosDispatch() {
   const state = useContext(TodosStateContext);
   if (!state) throw new Error("TodosProvider not found");
   return state.dispatch;
+}
+
+export function useTodoSelected() {
+  const state = useContext(TodosStateContext);
+  if (!state) throw new Error("TodosProvider not found");
+  return state.selectedTodo;
+}
+
+export function useTodoSetSelected() {
+  const state = useContext(TodosStateContext);
+  if (!state) throw new Error("TodosProvider not found");
+  return state.setSelectedTodo;
 }

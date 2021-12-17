@@ -16,6 +16,8 @@ export type ITodo = {
 export type ITodosState = {
   todos: ITodo[];
   dispatch?: Dispatch<Action>;
+  selectedTodo: ITodo | null;
+  setSelectedTodo: (todoItem: ITodo | null) => void;
 };
 
 export type IStatusOption = {

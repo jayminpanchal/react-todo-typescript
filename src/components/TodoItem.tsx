@@ -9,6 +9,7 @@ import CardContent from "@mui/material/CardContent";
 
 import { IStatusOption, ITodo } from "../types";
 import { StatusOptions } from "../utils";
+import { useTodoSetSelected } from "../context";
 
 interface ITodoItemProps {
   item: ITodo;
@@ -39,6 +40,7 @@ const useStyles = makeStyles({
 const TodoItem: React.FC<ITodoItemProps> = ({ item }) => {
   const status = StatusOptions[item.status] as IStatusOption;
   const classes = useStyles();
+  const setSelectedTodo = useTodoSetSelected();
 
   return (
     <Card>
@@ -65,7 +67,13 @@ const TodoItem: React.FC<ITodoItemProps> = ({ item }) => {
           </Grid>
           <Grid item xs={6}>
             <div className={classes.iconContainer}>
-              <IconButton size="small" color="primary">
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={() => {
+                  setSelectedTodo(item);
+                }}
+              >
                 <Edit />
               </IconButton>
             </div>

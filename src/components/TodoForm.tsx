@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -11,13 +11,25 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { SelectChangeEvent } from "@mui/material";
 
-import { useTodosDispatch } from "../context";
+import {
+  useTodosDispatch,
+  useTodoSelected,
+  useTodoSetSelected,
+} from "../context";
 import { InitialFormValues, StatusOptions } from "../utils";
 import { TodoFormState } from "../types";
 
 const TodoForm = () => {
   const [formData, setFormData] = useState<TodoFormState>(InitialFormValues);
   const dispatch = useTodosDispatch();
+  const selectedTodo = useTodoSelected();
+  const setSelectedTodo = useTodoSetSelected();
+
+  useEffect(() => {
+    if (selectedTodo) {
+      setFormData(selectedTodo);
+    }
+  }, [selectedTodo]);
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -30,11 +42,24 @@ const TodoForm = () => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch && dispatch({ type: "ADD", ...formData });
+    if (formData.id) {
+      dispatch &&
+        dispatch({
+          type: "UPDATE",
+          id: formData.id,
+          title: formData.title,
+          description: formData.description,
+          status: formData.status,
+        });
+      setSelectedTodo(null);
+    } else {
+      dispatch && dispatch({ type: "ADD", ...formData });
+    }
     setFormData(InitialFormValues);
   };
 
   const onCancel = () => {
+    setSelectedTodo(null);
     setFormData(InitialFormValues);
   };
 
@@ -45,6 +70,14 @@ const TodoForm = () => {
     });
   };
 
+  const statusOptions = selectedTodo
+    ? [
+        {
+          label: StatusOptions[selectedTodo.status].label,
+          value: StatusOptions[selectedTodo.status].value,
+        },
+      ].concat(StatusOptions[selectedTodo.status].allowedOptions)
+    : [];
   return (
     <Box
       component="form"
@@ -87,7 +120,7 @@ const TodoForm = () => {
                 onChange={onSelectChange}
                 name="status"
               >
-                {Object.values(StatusOptions).map((statusOption) => (
+                {statusOptions.map((statusOption) => (
                   <MenuItem value={statusOption.value}>
                     {statusOption.label}
                   </MenuItem>
