@@ -10,6 +10,10 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { SelectChangeEvent } from "@mui/material";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import { makeStyles } from "@mui/styles";
 
 import {
   useTodosDispatch,
@@ -19,11 +23,18 @@ import {
 import { InitialFormValues, StatusOptions } from "../utils";
 import { TodoFormState } from "../types";
 
+const useStyles = makeStyles({
+  historyWrapper: {
+    marginTop: "20px",
+  },
+});
+
 const TodoForm = () => {
   const [formData, setFormData] = useState<TodoFormState>(InitialFormValues);
   const dispatch = useTodosDispatch();
   const selectedTodo = useTodoSelected();
   const setSelectedTodo = useTodoSetSelected();
+  const classes = useStyles();
 
   useEffect(() => {
     if (selectedTodo) {
@@ -151,6 +162,19 @@ const TodoForm = () => {
             </Button>
           </Grid>
         )}
+        <div className={classes.historyWrapper}>
+          <List>
+            {selectedTodo?.history?.map((item, index) => (
+              <ListItem key={`HISTORY_${index}`}>
+                <ListItemText
+                  primary={`${item.message} at ${new Date(
+                    item.timestamp
+                  ).toString()}`}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </div>
       </Grid>
     </Box>
   );

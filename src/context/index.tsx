@@ -43,7 +43,7 @@ function todosReducer(state: ITodo[], action: Action): ITodo[] {
       const upadtedTodo = {
         id: action.id,
         title: action.title,
-        description: action.title,
+        description: action.description,
         status: action.status,
         history,
       };
